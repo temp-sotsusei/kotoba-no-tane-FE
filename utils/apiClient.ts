@@ -7,9 +7,9 @@ const baseUrl = process.env.API_ENDPOINT;
 
 const apiClient = {
   request: async <T>(url: string, postData?: T, requireAuth = true) => {
-    const postBody = postData
-      ? { method: "POST", body: JSON.stringify(postData) }
-      : { method: "GET" };
+    const postBody: RequestInit = postData
+      ? { method: "POST", body: JSON.stringify(postData), cache: "no-store" }
+      : { method: "GET", cache: "no-store" };
     if (requireAuth) {
       const executionContext =
         typeof window === "undefined" ? "server" : "client";
@@ -18,14 +18,14 @@ const apiClient = {
           const { token } = await auth0.getAccessToken();
           Object.assign(postBody, {
             headers: {
-              Authorization: token,
+              Authorization: `Bearer ${token}`,
             },
           });
         } else {
           const token = await getAccessToken();
           Object.assign(postBody, {
             headers: {
-              Authorization: token,
+              Authorization: `Bearer ${token}`,
             },
           });
         }
@@ -39,8 +39,12 @@ const apiClient = {
       throw new Error("リクエストに失敗しました");
     }
 
-    const responseJson = await response.json();
-    return responseJson;
+    try {
+      const responseJson = await response.json();
+      return responseJson;
+    } catch (e) {
+      return null;
+    }
   },
 };
 
@@ -48,7 +52,7 @@ export const login = async () => {
   return await apiClient.request("api/login", {});
 };
 export const getStories = async () => {
-  return await apiClient.request("api/calenders/stories");
+  return await apiClient.request("api/calendar/stories");
 };
 export const getFirstKeywordList = async () => {
   return await apiClient.request("api/story/chapter/keywords");
