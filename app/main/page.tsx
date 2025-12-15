@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Main from "@/layout/Main";
 import { groupStoriesByDate } from "./storyProcessor";
 import { GroupedStories } from "@/types";

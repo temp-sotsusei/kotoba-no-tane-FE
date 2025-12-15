@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import StoryCreator from "@/layout/StoryCreator";
 import { getFirstKeywordList } from "@/utils/apiClient";
 import { FC } from "react";
