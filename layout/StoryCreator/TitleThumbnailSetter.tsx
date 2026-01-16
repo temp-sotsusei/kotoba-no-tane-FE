@@ -1,10 +1,11 @@
 'use client'
-import React, { FC, useState } from 'react'
+import { FC } from 'react'
+import Image from "next/image";
 
 type TitleThumbnailSetterProps = {
   title: string;
   setTitle: (v: string) => void;
-  thumbnails: Array<{id: string; url: string}>;
+  thumbnails: Array<{thumbnailId: string; thumbnailPath: string}>;
   thumbnailId: string;
   setThumbnailId: (id: string) => void;
 }
@@ -30,19 +31,22 @@ const TitleThumbnailSetter: FC<TitleThumbnailSetterProps> = ({title, setTitle, t
         <div className='aspect-[2/3] w-full p-2 rounded-lg shadow-xl bg-white overflow-y-auto'>
           <div className='grid grid-cols-3 gap-4'>
             {thumbnails.map((thumbnail, i) => {
-              const isSelected = thumbnailId === thumbnail.id+""+i;
+              const isSelected = thumbnailId === thumbnail.thumbnailId;
 
               return (
-              <div
-                key={thumbnail.id+""+i}
-                onClick={(e) => setThumbnailId(thumbnail.id+""+i)}
+              <Image
+                key={thumbnail.thumbnailId}
+                onClick={(e) => setThumbnailId(thumbnail.thumbnailId)}
                 className={`
                   aspect-[2/3] w-full bg-amber-200 cursor-pointer rounded-md
                   transition-all duration-200
                   ${isSelected ? "ring-4 ring-[#93C400] scale-[1.03] shadow-xl" : "opacity-80 hover:opacity-100"}
                 `}
-              >
-              </div>
+                src={thumbnail.thumbnailPath}
+                alt={`Thumbnail ${thumbnail.thumbnailId}`}
+                width={100}
+                height={150}
+              />
             )})}
           </div>
         </div>

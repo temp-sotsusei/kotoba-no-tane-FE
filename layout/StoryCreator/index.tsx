@@ -99,7 +99,7 @@ const StoryCreator = () => {
     setErrorText,
    } = useStoryCreator();
 
-   const [thumbnails, setThumbnails] = useState<Array<{id: string; url: string}>>([]);
+   const [thumbnails, setThumbnails] = useState<Array<{thumbnailId: string; thumbnailPath: string}>>([]);
 
    // --- ボタンの設定を定義（ここがキモ！） ---
   const footerConfig = {
@@ -126,7 +126,7 @@ const StoryCreator = () => {
           const thumbnails = await getThumbnailTemplates();
           console.log(thumbnails);
           setThumbnails(thumbnails);
-          setThumbnailId(thumbnails[0].id+""+0);
+          setThumbnailId(thumbnails[0].thumbnailId);
           setWordCardOptions(initialWords);
           setSelectedWords(initialWords[0]);
       };

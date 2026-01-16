@@ -209,7 +209,7 @@ export const useStoryCreator = () => {
 
         const response = await postStorySave({
             storyTitle: title,
-            thumbnailId: "019a9c35-c8ec-745a-a469-64cfb68111bc",
+            thumbnailId: thumbnailId,
             chapters: chaptersPayload,
         });
         console.log("Story saved successfully:", response);
