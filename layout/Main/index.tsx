@@ -83,7 +83,10 @@ const Main = ({ calenderStoryData }: Props) => {
           />
         </h1>
 
-        <button className="h-fit px-2 py-1 bg-[#FF8258] text-white font-bold border-2 border-white text-sm rounded-md z-10">
+        <button
+          className="h-fit px-2 py-1 bg-[#FF8258] text-white font-bold border-2 border-white text-sm rounded-md z-10"
+          onClick={() => router.push('/guide')}
+        >
           つかいかた！
         </button>
         

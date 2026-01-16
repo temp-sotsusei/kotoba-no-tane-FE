@@ -111,7 +111,7 @@ const StoryCreator = () => {
     createStory: {
       left: { label: "やめる", action: () => {router.push("/main")}, color: "bg-[#F55555]" },
       center: { label: "これでおしまい！", action: () => handleFinishWriting(), color: "bg-[#93C400]" },
-      right: currentEpisode < 5 ? { label: "つぎのお話へ", action: () => handleNextEpisode(), color: "bg-gray-400" } : null,
+      right: currentEpisode < 5 ? { label: "つぎへ", action: () => handleNextEpisode(), color: "bg-gray-400" } : null,
     },
     setTitleThumbnail: {
       left: { label: "やめる", action: () => {router.push("/main")}, color: "bg-[#F55555]" },
@@ -189,21 +189,21 @@ const StoryCreator = () => {
             <button className={`${footerConfig.left.color} text-white font-bold px-6 py-3 rounded-lg`} onClick={footerConfig.left.action}>
               {footerConfig.left.label}
             </button>
-          ) : <div className="w-[96px]" />}
+          ) : <div className="w-24" />}
 
           {/* 中央ボタン */}
           {footerConfig.center ? (
-            <button className={`${footerConfig.center.color} text-white font-bold px-8 py-4 rounded-lg`} onClick={footerConfig.center.action}>
+            <button className={`${footerConfig.center.color} text-white font-bold px-2 py-3 rounded-lg`} onClick={footerConfig.center.action}>
               {footerConfig.center.label}
             </button>
-          ) : <div className="h-[56px] w-[96px]" />}
+          ) : <div className="h-12 w-24" />}
 
           {/* 右ボタン */}
           {footerConfig.right ? (
             <button className={`${footerConfig.right.color} text-white font-bold px-6 py-3 rounded-lg`} onClick={footerConfig.right.action}>
               {footerConfig.right.label}
             </button>
-          ) : <div className="w-[96px]" />}
+          ) : <div className="w-24" />}
 
         </div>
       </footer>
