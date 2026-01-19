@@ -115,7 +115,11 @@ const StoryCreator = () => {
     },
     setTitleThumbnail: {
       left: { label: "やめる", action: () => {router.push("/main")}, color: "bg-[#F55555]" },
-      center: { label: "さくせい！", action: () => handleSaveStory().then(() => router.push("/main")), color: "bg-[#93C400]" },
+      center: { label: "さくせい！", action: () => handleSaveStory().then((id) => {
+        if (id) {
+          router.push(`/story/view/${id}`);
+        }
+      }), color: "bg-[#93C400]" },
       right: null,
     },
   }[currentPhase];

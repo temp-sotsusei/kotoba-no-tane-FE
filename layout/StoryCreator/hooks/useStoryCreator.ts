@@ -191,7 +191,7 @@ export const useStoryCreator = () => {
         setCurrentPhase("setTitleThumbnail");
     };
 
-    const handleSaveStory = async () => {
+    const handleSaveStory:() => Promise<string | undefined> = async () => {
         if (currentPhase !== "setTitleThumbnail") return;
         if (title.trim().length === 0) {
             setErrorText("タイトルを入力してください");
@@ -212,7 +212,7 @@ export const useStoryCreator = () => {
             thumbnailId: thumbnailId,
             chapters: chaptersPayload,
         });
-        console.log("Story saved successfully:", response);
+        return response.storyId;
     }
 
     return {
