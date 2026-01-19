@@ -98,6 +98,7 @@ export const useStoryCreator = () => {
     // 現在の制作ステップ (単語選択 / 物語執筆 / タイトル設定)
     const [currentPhase, setCurrentPhase] = useState<StoryCreationPhase>("selectWords");
     const [isOpen, setIsOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     /* -------------------------------------------
      * 選択データ (Selection / Draft)
@@ -137,6 +138,7 @@ export const useStoryCreator = () => {
     
     // 【単語選択画面】カードを1つ選び、執筆フェーズへ進む
     const handleSelectCard = () => {
+        if (isSubmitting) return;
         if (currentPhase !== "selectWords") return;
         if (!selectedWords) {
             console.warn("単語カードが選択されていません");
@@ -147,12 +149,14 @@ export const useStoryCreator = () => {
 
     // 【執筆画面】今の内容を保存して、次の話の単語選択へ進む
     const handleNextEpisode = async () => {
+        if (isSubmitting) return;
         if (currentPhase !== "createStory" || currentEpisode >= 5) return;
         if (!validateStory(activeStoryContent)) return;
-        
-        commitCurrentEpisode(activeStoryContent);
 
+        setIsSubmitting(true);
+        
         try {
+            commitCurrentEpisode(activeStoryContent);
             const response = await postNextChapter(activeStoryContent);
             const nextWords: WordCard[] = response; 
             setWordCardOptions(nextWords);
@@ -171,11 +175,15 @@ export const useStoryCreator = () => {
             setCurrentPhase("selectWords");
         } catch (error) {
             console.error("単語の取得に失敗しました", error);
+            setErrorText("通信エラーが発生しました。もう一度お試しください。");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     // 【執筆画面】今の内容を保存して、タイトル・サムネイル設定へ進む
     const handleFinishWriting = () => {
+        if (isSubmitting) return;
         if (currentPhase !== "createStory") return;
         if (!validateStory(activeStoryContent)) return;
         
@@ -192,6 +200,7 @@ export const useStoryCreator = () => {
     };
 
     const handleSaveStory:() => Promise<string | undefined> = async () => {
+        if (isSubmitting) return;
         if (currentPhase !== "setTitleThumbnail") return;
         if (title.trim().length === 0) {
             setErrorText("タイトルを入力してください");
@@ -202,17 +211,27 @@ export const useStoryCreator = () => {
             return;
         }
 
-        const chaptersPayload = stories.map(story => ({
-            chapterNum: story.id,
-            chapterJson: JSON.parse(JSON.stringify(story.story)),
-        }));
+        setIsSubmitting(true);
 
-        const response = await postStorySave({
-            storyTitle: title,
-            thumbnailId: thumbnailId,
-            chapters: chaptersPayload,
-        });
-        return response.storyId;
+        try {
+            const chaptersPayload = stories.map(story => ({
+                chapterNum: story.id,
+                chapterJson: JSON.parse(JSON.stringify(story.story)),
+            }));
+    
+            const response = await postStorySave({
+                storyTitle: title,
+                thumbnailId: thumbnailId,
+                chapters: chaptersPayload,
+            });
+            return response.storyId;
+        } catch (error) {
+            console.error("保存に失敗しました", error);
+            setErrorText("保存に失敗しました。");
+            return;
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return {
@@ -229,6 +248,7 @@ export const useStoryCreator = () => {
         stories,
         isOpen,
         errorText,
+        isSubmitting,
 
         handleSelectCard,
         handleNextEpisode,
@@ -242,5 +262,6 @@ export const useStoryCreator = () => {
         setThumbnailId,
         setIsOpen,
         setErrorText,
+        setIsSubmitting,
     };
 };

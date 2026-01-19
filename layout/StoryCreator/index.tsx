@@ -84,6 +84,7 @@ const StoryCreator = () => {
     stories,
     isOpen,
     errorText,
+    isSubmitting,
 
     handleSelectCard,
     handleNextEpisode,
@@ -97,6 +98,7 @@ const StoryCreator = () => {
     setThumbnailId,
     setIsOpen,
     setErrorText,
+    setIsSubmitting,
    } = useStoryCreator();
 
    const [thumbnails, setThumbnails] = useState<Array<{thumbnailId: string; thumbnailPath: string}>>([]);
@@ -106,33 +108,52 @@ const StoryCreator = () => {
     selectWords: {
       left: { label: "やめる", action: () => {router.push("/main")}, color: "bg-[#F55555]" },
       center: null,
-      right: { label: "決定", action: handleSelectCard, color: "bg-[#93C400]" },
+      right: {
+        label: isSubmitting ? "ローディング中..." : "決定",
+        action: handleSelectCard,
+        color: isSubmitting ? "bg-gray-400 cursor-wait" : "bg-[#93C400]",
+      },
     },
     createStory: {
       left: { label: "やめる", action: () => {router.push("/main")}, color: "bg-[#F55555]" },
       center: { label: "これでおしまい！", action: () => handleFinishWriting(), color: "bg-[#93C400]" },
-      right: currentEpisode < 5 ? { label: "つぎへ", action: () => handleNextEpisode(), color: "bg-gray-400" } : null,
+      right: currentEpisode < 5 ? {
+        label: isSubmitting ? "さくせいちゅう..." : "つぎへ",
+        action: () => handleNextEpisode(),
+        color: isSubmitting ? "bg-gray-400 cursor-wait" : "bg-[#93C400]",
+      } : null,
     },
     setTitleThumbnail: {
       left: { label: "やめる", action: () => {router.push("/main")}, color: "bg-[#F55555]" },
-      center: { label: "さくせい！", action: () => handleSaveStory().then((id) => {
-        if (id) {
-          router.push(`/story/view/${id}`);
-        }
-      }), color: "bg-[#93C400]" },
+      center: {
+        label: isSubmitting ? "ほぞん中..." : "さくせい！",
+        action: () => handleSaveStory().then((id) => {
+          if (id) {
+            router.push(`/story/view/${id}`);
+          }
+        }),
+        color: isSubmitting ? "bg-gray-400 cursor-wait" : "bg-[#93C400]",
+      },
       right: null,
     },
   }[currentPhase];
 
    useEffect(() => {
       const init = async () => {
-          const initialWords = await getFirstKeywordList();
-          const thumbnails = await getThumbnailTemplates();
-          console.log(thumbnails);
-          setThumbnails(thumbnails);
-          setThumbnailId(thumbnails[0].thumbnailId);
-          setWordCardOptions(initialWords);
-          setSelectedWords(initialWords[0]);
+          setIsSubmitting(true);
+          try {
+            const initialWords = await getFirstKeywordList();
+            const thumbnails = await getThumbnailTemplates();
+            
+            setThumbnails(thumbnails);
+            if(thumbnails.length > 0) setThumbnailId(thumbnails[0].thumbnailId);
+            setWordCardOptions(initialWords);
+            if(initialWords.length > 0) setSelectedWords(initialWords[0]);
+          } catch (error) {
+              console.error("初期データの取得に失敗しました", error);
+          } finally {
+              setIsSubmitting(false);
+          }
       };
       init();
   }, []);
@@ -190,21 +211,33 @@ const StoryCreator = () => {
           
           {/* 左ボタン */}
           {footerConfig.left ? (
-            <button className={`${footerConfig.left.color} text-white font-bold px-6 py-3 rounded-lg`} onClick={footerConfig.left.action}>
+            <button
+              disabled={isSubmitting}
+              className={`${footerConfig.left.color} text-white font-bold px-6 py-3 rounded-lg`}
+              onClick={footerConfig.left.action}
+            >
               {footerConfig.left.label}
             </button>
           ) : <div className="w-24" />}
 
           {/* 中央ボタン */}
           {footerConfig.center ? (
-            <button className={`${footerConfig.center.color} text-white font-bold px-2 py-3 rounded-lg`} onClick={footerConfig.center.action}>
+            <button
+              disabled={isSubmitting}
+              className={`${footerConfig.center.color} text-white font-bold px-2 py-3 rounded-lg`}
+              onClick={footerConfig.center.action}
+            >
               {footerConfig.center.label}
             </button>
           ) : <div className="h-12 w-24" />}
 
           {/* 右ボタン */}
           {footerConfig.right ? (
-            <button className={`${footerConfig.right.color} text-white font-bold px-6 py-3 rounded-lg`} onClick={footerConfig.right.action}>
+            <button
+              disabled={isSubmitting}
+              className={`${footerConfig.right.color} text-white font-bold px-6 py-3 rounded-lg`}
+              onClick={footerConfig.right.action}
+            >
               {footerConfig.right.label}
             </button>
           ) : <div className="w-24" />}
