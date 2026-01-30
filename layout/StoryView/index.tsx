@@ -45,6 +45,7 @@ const StoryView: FC<Props> = ({ story, shareUrl, id }) => {
 
   useEffect(() => {
     const intervalId = setInterval(async () => {
+      if (!feedback.includes(undefined)) return null;
       const accessToken = await getAccessToken();
       const headers = accessToken
         ? { Authorization: `Bearer ${accessToken}` }
@@ -59,11 +60,8 @@ const StoryView: FC<Props> = ({ story, shareUrl, id }) => {
       );
       const storyData = await response.json();
 
-      console.log("↓storyData:");
-      console.log(storyData);
-      console.log(storyData.chapters.map((data) => data.feedback));
       setFeedback(storyData.chapters.map((data) => data.feedback));
-    }, 10000);
+    }, 5000);
 
     return () => {
       clearInterval(intervalId);
