@@ -54,7 +54,7 @@ const StoryView: FC<Props> = ({ story, shareUrl, id }) => {
         {
           headers,
           mode: "cors",
-          credentials: "include",
+          credentials: "omit",
         },
       );
       const storyData = await response.json();
