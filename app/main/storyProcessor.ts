@@ -26,7 +26,9 @@ export function groupStoriesByDate(rawStories: RawStoryListResponse): GroupedSto
 
     const sortedGroupedStories: GroupedStories = {};
     sortedKeys.forEach(key => {
-        sortedGroupedStories[key] = grouped[key];
+        sortedGroupedStories[key] = grouped[key]
+            .slice()
+            .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     });
 
     return sortedGroupedStories;

@@ -48,12 +48,13 @@ const Main = ({ calenderStoryData }: Props) => {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const isLimitReached = useMemo(() => {
-    const today = new Date();
-    const todayKey = toDateKey(today); // 今日の日付キー (例: "2023-10-25")
-    const todayStories = calenderStoryData[todayKey] || [];
-    return todayStories.length >= MAX_DAILY_STORIES;
-  }, [calenderStoryData]);
+  const isLimitReached = false;
+  // const isLimitReached = useMemo(() => {
+  //   const today = new Date();
+  //   const todayKey = toDateKey(today); // 今日の日付キー (例: "2023-10-25")
+  //   const todayStories = calenderStoryData[todayKey] || [];
+  //   return todayStories.length >= MAX_DAILY_STORIES;
+  // }, [calenderStoryData]);
 
   const handleDateSelection = (date: Date) => {
     setSelectedDate(date);
@@ -72,7 +73,7 @@ const Main = ({ calenderStoryData }: Props) => {
   };
 
   return (
-    <div className="bg-[url('/images/background.jpg')] h-dvh flex flex-col overflow-hidden">
+    <div className="bg-[url('/images/background.jpg')] flex flex-col overflow-hidden">
       <header 
         className="relative flex items-center justify-end w-full pt-6 pb-3 bg-[#C1ED86] border-b-2 border-[#93C400] shadow-md px-4"
       >
@@ -109,70 +110,45 @@ const Main = ({ calenderStoryData }: Props) => {
 
         {/* 選択された日付の物語表示エリア */}
         {selectedStories.length > 0 && (
-          <div className="flex-1 w-full pt-4 mt-3 bg-white/50 flex flex-col items-center justify-start overflow-hidden">
+          <div className="flex-1 w-full pt-4 mt-3 mb-3 bg-white/50 flex flex-col items-center justify-start overflow-hidden">
             {/* 選択日表示 */}
             <p className="text-center text-lg font-bold text-gray-700">
               {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日
             </p>
-            
-            <div className="min-h-8">
-              <div
-                className="swiper-pagination w-full flex justify-center my-3"
-                style={{ position: 'static' }}
-              ></div>
-            </div>
 
             {/* 物語スライダー */}
-            <div className="relative w-full max-w-sm flex-1 story-swiper">
-              <Swiper
-                modules={[Pagination, Navigation]}
-                spaceBetween={30}
-                slidesPerView={1}
-                centeredSlides={true}
-                pagination={pagination}
-                navigation={{ nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }}
-                className="w-full h-full"
-              >
-                {selectedStories.map((story) => (
-                  <SwiperSlide key={story.storyId}>
-                    <div className="flex flex-col items-center px-4">
-                      {/* 表紙（タイトル帯を同一ラッパーで重ねる） */}
-                      <div
-                        className="relative w-64 h-88 rounded-lg overflow-hidden shadow-2xl bg-white"
-                        onClick={() => router.push(`/story/view/${story.storyId}`)}  
-                      >
-                        {/* 画像 */}
-                        <StoryCard story={story} />
+            <div className="w-full px-4 my-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {selectedStories.map((story) => (
+                <div key={story.storyId} className="flex flex-col items-center px-4">
+                  {/* 表紙（タイトル帯を同一ラッパーで重ねる） */}
+                  <div
+                    className="relative w-64 h-88 rounded-lg overflow-hidden shadow-2xl bg-white"
+                    onClick={() => router.push(`/story/view/${story.storyId}`)}  
+                  >
+                    {/* 画像 */}
+                    <StoryCard story={story} />
 
-                        {/* タイトル帯（画像の上に被せる） */}
-                        <div className="absolute w-full top-8 left-1/2 -translate-x-1/2 z-20 px-6 py-2 shadow-lg bg-gray-300">
-                          <p className="text-center font-bold text-sm whitespace-nowrap overflow-hidden text-ellipsis text-white drop-shadow">
-                            {story.storyTitle}
-                          </p>
-                        </div>
-                      </div>
+                    {/* タイトル帯（画像の上に被せる） */}
+                    <div className="absolute w-full top-8 left-1/2 -translate-x-1/2 z-20 px-6 py-2 shadow-lg bg-gray-300">
+                      <p className="text-center font-bold text-sm whitespace-nowrap overflow-hidden text-ellipsis text-white drop-shadow">
+                        {story.storyTitle}
+                      </p>
                     </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-              <div className="
-                swiper-button-prev top-2/5 text-3xl font-bold flex items-center justify-center
-                transition-transform duration-150
-                hover:scale-125 active:scale-125
-                cursor-pointer"
-              >
-                <FaChevronLeft className="text-[#93C400]" />
-              </div>
-              <div
-                className="
-                  swiper-button-next text-3xl font-bold flex items-center justify-center
-                  transition-transform duration-75
-                  hover:scale-125 active:scale-125
-                  cursor-pointer
-                "
-              >
-                <FaChevronRight className="text-[#93C400]" />
-              </div>
+                  </div>
+                </div>
+              ))}
+              {isLimitReached && (
+                <div key={'end'} className="flex flex-col items-center px-4">
+                  {/* 表紙（タイトル帯を同一ラッパーで重ねる） */}
+                  <div
+                    className="w-64 h-88 rounded-lg overflow-hidden shadow-2xl flex items-center justify-center bg-gray-400 border-gray-300 border-4"
+                  >
+                    <span className="font-bold text-xl text-white">
+                      もうきょうはおわりだよ！
+                    </span>
+                  </div>
+                </div>
+                )}
             </div>
           </div>
         )}
